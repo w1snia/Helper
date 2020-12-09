@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Helper
 {
@@ -53,6 +54,20 @@ namespace Helper
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //TestDateUtils();
+        }
+
+        private void TestDateUtils()
+        {
+            DateTime date1 = new DateTime(2020, 12, 12); // should be 14
+            DateTime date2 = new DateTime(2020, 12, 20); // should be 21
+            DateTime date3 = new DateTime(2020, 12, 25); // should be 27
+
+            DateTime date1check = DateUtils.NextWorkingDay(date1);
+            DateTime date2check = DateUtils.NextWorkingDay(date2);
+            DateTime date3check = DateUtils.NextWorkingDay(date3);
+
         }
     }
 }
