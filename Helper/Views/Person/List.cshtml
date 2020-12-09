@@ -1,0 +1,120 @@
+﻿@model List<Person>
+
+@{ ViewData["Title"] = "Index"; }
+
+@*<br />
+    <center>
+        <button class="btn btn-success" hidden disabled onclick="multiplePass()" id="multiplePass" type="submit">PRZEKAŻ WIELE POZYCJI DO GENEROWANIA</button>
+    </center>
+    <br />*@
+
+@* dodanie 1 ukrytych divów, żeby "filterhead"  DATY_ZAPADALNOSCI i STATUSU działał poprawnie *@
+<div class="filterhead" hidden></div>
+
+
+<div class="table-wrapper">
+    <div class="col-12 border p-3">
+        <table class="display table table-striped table-bordered" id="PersonDT" style="width:100%">
+            <thead>
+                <tr class="person">
+                    <th>Id</th>
+                    <th class="filterhead">Imię</th>
+                    <th class="filterhead">Nazwisko</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr class="person">
+                    <td>@item.Id</td>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+    var table;
+    $(document).ready(function () {
+    table = $('#PersonDT').DataTable({
+        //order: [[4, 'desc'], [5, 'desc']],
+        select: false,
+        searching: true,
+        paginate: true,
+        "columns": [
+            { "orderable": false },
+            { "orderable": false },
+            { "orderable": false }
+        ],
+        "pageLength": 50,
+        "language": {
+            "lengthMenu": "Wyświetl _MENU_ rekordów",
+            "zeroRecords": "Nic nie znaleziono",
+            "info": "Strona _PAGE_ z _PAGES_",
+            "infoEmpty": "Brak rekordów",
+            "infoFiltered": "(znaleziono z _MAX_ rekordów)",
+            "search": "Wyszukaj:",
+            "paginate": {
+                "first": "Pierwsza",
+                "last": "Ostatnia",
+                "next": "Następna",
+                "previous": "Poprzednia"
+            },
+        }
+    });
+
+        $(".filterhead").each(function (i) {
+            var select = $('<select><option value=""></option></select>')
+                .appendTo($(this).empty())
+                .on('change', function () {
+                    var term = $(this).val();
+                    var regex = '\\b' + term + '\\b';
+                    table.column(i).search(regex, true, false).draw();
+                });
+            table.column(i).data().unique().sort().each(function (d, j) {
+                select.append('<option value="' + d + '">' + d + '</option>')
+            });
+        });
+
+    $('#PersonDT tbody').on('click', 'tr', function () {
+        $(this).toggleClass('selected');
+        if (table.rows('.selected').data().length >= 2) {
+            document.getElementById('multiplePass').disabled = false;
+            document.getElementById('multiplePass').hidden = false;
+        }
+        else {
+            document.getElementById('multiplePass').disabled = true;
+            document.getElementById('multiplePass').hidden = true;
+        }
+    });
+});
+
+function multiplePass() {
+    var data = table.rows('.selected').data();
+    var len = data.length;
+    var i;
+    var IdList = [];
+
+    for (i = 0; i < len; i++) {
+        IdList.push(data[i][0]);
+    }
+
+    $.ajax({
+        type: "POST",
+        data: { IdList },
+        url: '@Url.Action("", "")',
+        success: function (data) {
+            alert(data);
+            window.location.reload(1);
+        }
+    });
+}
+    </script>
+
+    @*<script src="~/js/creditHandle.js"></script>*@
+}
