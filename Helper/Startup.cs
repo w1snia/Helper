@@ -1,3 +1,5 @@
+using Hangfire;
+using Hangfire.SqlServer;
 using Helper.Models.AppDbContext;
 using Helper.Repositories;
 using Helper.Repositories.Interfaces;
@@ -23,7 +25,27 @@ namespace Helper
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Add Hangfire services.
+            services.AddHangfire(configuration => configuration
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+        {
+            CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+            SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+            QueuePollInterval = TimeSpan.Zero,
+            UseRecommendedIsolationLevel = true,
+            UsePageLocksOnDequeue = true,
+            DisableGlobalLocks = true
+        }));
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+
             services.AddControllersWithViews();
             services.AddTransient<IPersonRepository, PersonRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
@@ -49,6 +71,10 @@ namespace Helper
 
             app.UseAuthorization();
 
+            app.UseHangfireServer();
+
+            app.UseHangfireDashboard();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -57,6 +83,14 @@ namespace Helper
             });
 
             //TestDateUtils();
+            TestDates();
+        }
+
+        private void TestDates()
+        {
+            DateTime actualDatePlusMonth = DateTime.Now.AddMonths(1);
+            string date = actualDatePlusMonth.Month.ToString("d2") + "-" + actualDatePlusMonth.Year.ToString();
+            Console.WriteLine(date);
         }
 
         private void TestDateUtils()
