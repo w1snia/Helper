@@ -4,3 +4,23 @@
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
+
+<div style="display:inline-block">
+    <input id="datepickerStart" width="276" />
+</div>
+
+<div style="display:inline-block">
+    <input id="datepickerEnd" width="276" />
+</div>
+
+<button onclick="PobierzRaport()" class="btn btn-info" type="submit"></button>
+
+<script>
+    $('#datepickerStart').datepicker({format: 'dd-mm-yyyy'});
+    $('#datepickerEnd').datepicker({ format: 'dd-mm-yyyy' });
+
+    function PobierzRaport() {
+        var url = "@Url.Action("PobierzRaport","Home")";
+        window.location.href = url + "?przedzial=" + datepickerStart.Value + "|" + datepickerEnd.Value+"?rok=2020";
+    }
+</script>

@@ -31,6 +31,12 @@ namespace Helper.Controllers
             return View();
         }
 
+        public IActionResult PobierzRaport(string przedzial, string rok)
+        {
+            return View("Privacy");
+        }
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
