@@ -1,5 +1,8 @@
 ﻿using Helper.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace Helper.Controllers
 {
@@ -19,6 +22,8 @@ namespace Helper.Controllers
 
         public IActionResult List()
         {
+            Log.Information("Wywoało liste");
+            Task<string> text = _personRepository.GetTextAsync();
             return View(_personRepository.GetPersons());
         }
 

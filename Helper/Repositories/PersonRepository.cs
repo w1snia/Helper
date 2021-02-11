@@ -3,8 +3,11 @@ using Helper.Models;
 using Helper.Models.AppDbContext;
 using Helper.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Helper.Repositories
 {
@@ -33,6 +36,12 @@ namespace Helper.Repositories
                 () => jobRepository.AddNewPersonEveryMinute(),
                 "*/2 * * * *"
                 );
+        }
+        public async Task<string> GetTextAsync()
+        {
+            await Task.Delay(8000);
+            Log.Information("WYWOŁANE PO 8 SEK.");
+            return "test";
         }
     }
 }
