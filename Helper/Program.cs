@@ -10,7 +10,7 @@ namespace Helper
         {
             CreateHostBuilder(args).Build().Run();
         }
-
+        //t
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog((context, config) =>
